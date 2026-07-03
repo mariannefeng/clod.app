@@ -12,11 +12,13 @@ struct Usage: Sendable {
 
 enum FetchError: Error, LocalizedError {
   case noToken
+  case rateLimited
   case badResponse(String)
 
   var errorDescription: String? {
     switch self {
     case .noToken: "Could not read Claude Code credentials from keychain"
+    case .rateLimited: "Rate limited — will retry shortly"
     case .badResponse(let body): "Unexpected API response: \(body)"
     }
   }
@@ -44,6 +46,11 @@ struct UsageFetcher: Sendable {
     }
 
     guard let raw = try? decoder.decode(RawUsage.self, from: data) else {
+      if let apiError = try? JSONDecoder().decode(ApiError.self, from: data),
+        apiError.error.type == "rate_limit_error"
+      {
+        throw FetchError.rateLimited
+      }
       throw FetchError.badResponse(String(decoding: data, as: UTF8.self))
     }
 
@@ -81,6 +88,14 @@ struct UsageFetcher: Sendable {
   }()
 
   nonisolated(unsafe) private static let iso = ISO8601DateFormatter()
+}
+
+private struct ApiError: Decodable {
+  struct Detail: Decodable {
+    let type: String
+    let message: String
+  }
+  let error: Detail
 }
 
 private struct RawUsage: Decodable {
