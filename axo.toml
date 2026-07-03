@@ -1,0 +1,12 @@
+project_name = "clod"
+
+[tasks]
+build = {
+  command = "strudel build",
+  env = { APPLE_SIGNING_IDENTITY = "axo://apple/developer/dev-cert" }
+}
+bundle = {
+  command = "strudel bundle",
+  env = { APPLE_SIGNING_IDENTITY = "axo://apple/developer/dev-cert" }
+}
+rust = "cargo install --path ."
