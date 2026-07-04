@@ -13,12 +13,14 @@ struct Usage: Sendable {
 enum FetchError: Error, LocalizedError {
   case noToken
   case rateLimited
+  case authFailed
   case badResponse(String)
 
   var errorDescription: String? {
     switch self {
     case .noToken: "Could not read Claude Code credentials from keychain"
     case .rateLimited: "Rate limited — will retry shortly"
+    case .authFailed: "Authentication failed — try logging in again with `claude`"
     case .badResponse(let body): "Unexpected API response: \(body)"
     }
   }
@@ -46,10 +48,12 @@ struct UsageFetcher: Sendable {
     }
 
     guard let raw = try? decoder.decode(RawUsage.self, from: data) else {
-      if let apiError = try? JSONDecoder().decode(ApiError.self, from: data),
-        apiError.error.type == "rate_limit_error"
-      {
-        throw FetchError.rateLimited
+      if let apiError = try? JSONDecoder().decode(ApiError.self, from: data) {
+        switch apiError.error.type {
+        case "rate_limit_error": throw FetchError.rateLimited
+        case "authentication_error": throw FetchError.authFailed
+        default: break
+        }
       }
       throw FetchError.badResponse(String(decoding: data, as: UTF8.self))
     }
