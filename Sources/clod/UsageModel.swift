@@ -62,7 +62,7 @@ final class UsageModel {
   }
 
   var menuBarTitle: String {
-    guard let usage else { return "–" }
+    guard error == nil, let usage else { return "…" }
     return "\(Int(usage.fiveHour.utilization.rounded()))%"
   }
 }
