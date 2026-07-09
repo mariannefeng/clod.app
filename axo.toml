@@ -9,4 +9,5 @@ bundle = {
   command = "strudel bundle",
   env = { APPLE_SIGNING_IDENTITY = "axo://apple/developer/dev-cert" }
 }
+install = ":build --install"
 rust = "cargo install --path ."
