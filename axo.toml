@@ -1,11 +1,24 @@
 project_name = "clod"
 
 [tasks]
+run = {
+  command = "strudel run",
+  env = { APPLE_SIGNING_IDENTITY = "axo://apple/developer/dev-cert" }
+}
 build = {
   command = "strudel build",
   env = { APPLE_SIGNING_IDENTITY = "axo://apple/developer/dev-cert" }
 }
-bundle = {
-  command = "strudel bundle",
-  env = { APPLE_SIGNING_IDENTITY = "axo://apple/developer/dev-cert" }
+install = ":build --install"
+release = {
+  command = "strudel release",
+  env = {
+    APPLE_SIGNING_IDENTITY = "axo://apple/developer/developer-app-cert",
+    APPLE_API_ISSUER = "axo://apple/app-store-connect/api-issuer-id",
+    APPLE_API_KEY = "axo://apple/app-store-connect/api-key-id",
+    APPLE_API_KEY_PATH = "axo://apple/app-store-connect/api-key-path"
+  }
 }
+fmt = [
+  "swift format -i --recursive Sources",
+]
