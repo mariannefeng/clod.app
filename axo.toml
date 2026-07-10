@@ -1,6 +1,9 @@
 project_name = "clod"
 
 [tasks]
+format = "swift format --in-place --recursive Sources"
+clean = "strudel clean"
+
 run = {
   command = "strudel run",
   env = { APPLE_SIGNING_IDENTITY = "axo://apple/developer/dev-cert" }
@@ -19,6 +22,3 @@ release = {
     APPLE_API_KEY_PATH = "axo://apple/app-store-connect/api-key-path"
   }
 }
-fmt = [
-  "swift format -i --recursive Sources",
-]
