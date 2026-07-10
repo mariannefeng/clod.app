@@ -62,7 +62,8 @@ final class UsageModel {
   }
 
   var menuBarTitle: String {
-    guard error == nil, let usage else { return "…" }
-    return "\(Int(usage.fiveHour.utilization.rounded()))%"
+    guard let usage else { return "…" }
+    let percent = "\(Int(usage.fiveHour.utilization.rounded()))%"
+    return error == nil ? percent : "(\(percent))"
   }
 }
