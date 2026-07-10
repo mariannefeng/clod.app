@@ -62,6 +62,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     menu.addItem(.separator())
+    if CLIInstaller.isInstalled {
+      menu.addItem(disabled("'clod' helper installed in ~/.local/bin"))
+    } else {
+      menu.addItem(
+        NSMenuItem(
+          title: "Install 'clod' CLI helper...", action: #selector(installCLI), keyEquivalent: ""))
+    }
+
+    menu.addItem(.separator())
     menu.addItem(NSMenuItem(title: "Refresh", action: #selector(refresh), keyEquivalent: "r"))
     menu.addItem(NSMenuItem(title: "Quit clod", action: #selector(quit), keyEquivalent: "q"))
   }
@@ -74,6 +83,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
   @objc private func refresh() { model.refreshNow() }
   @objc private func quit() { NSApplication.shared.terminate(nil) }
+
+  @objc private func installCLI() {
+    let alert = NSAlert()
+    do {
+      try CLIInstaller.install()
+      alert.messageText = "Installed"
+      alert.informativeText = "Run 'clod' in your terminal to show usage."
+    } catch {
+      alert.messageText = "Couldn't install"
+      alert.informativeText = error.localizedDescription
+      alert.alertStyle = .warning
+    }
+    alert.runModal()
+  }
 
   private func pct(_ v: Double) -> String { "\(Int(v.rounded()))%" }
 
@@ -88,7 +111,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 @main
 enum Main {
   static func main() {
-    if CommandLine.arguments.contains("--usage") {
+    if CommandLine.arguments.contains("--usage") || isatty(STDOUT_FILENO) != 0 {
       Task { @MainActor in
         do {
           let usage = try await UsageFetcher().fetch()
