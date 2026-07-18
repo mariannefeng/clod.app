@@ -14,6 +14,10 @@ If a fetch is rate limited, clod waits 60 seconds and retries automatically.
 
 Uses Claude Code's private API token; if it expires, run Claude code (`claude`) to refresh it.
 
+## Download
+
+Download the latest build from the [releases page](https://github.com/octavore/clod.app/releases).
+
 ## Develop
 
 Requires macOS 14+, Swift 6, and [strudel](https://github.com/octavore/strudel) for building/signing/packaging.
