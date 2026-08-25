@@ -63,7 +63,7 @@ final class UsageModel {
 
   var menuBarTitle: String {
     guard let usage else { return "…" }
-    let percent = "\(usage.utilization.percent)"
+    let percent = usage.utilization.percent
     return error == nil ? percent : "(\(percent))"
   }
 }
