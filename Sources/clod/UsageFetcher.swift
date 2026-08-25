@@ -73,8 +73,10 @@ struct UsageFetcher: Sendable {
     let fiveHour = raw.fiveHour.map { UsageInfo(utilization: $0.utilization, resetsAt: $0.resetsAt) }
     let sevenDay = raw.sevenDay.map { UsageInfo(utilization: $0.utilization, resetsAt: $0.resetsAt) }
     let credits = raw.spend.flatMap { spend -> Credits? in
-      guard let used = spend.used, let limit = spend.limit else { return nil }
-      return Credits(used: used.value, limit: limit.value, percent: spend.percent)
+      guard let used = spend.used, let limit = spend.limit, let percent = spend.percent else {
+        return nil
+      }
+      return Credits(used: used.value, limit: limit.value, percent: percent)
     }
 
     guard let utilization = fiveHour?.utilization ?? credits?.percent else {
@@ -136,7 +138,7 @@ private struct RawUsageInfo: Decodable {
 private struct RawSpend: Decodable {
   let used: RawAmount?
   let limit: RawAmount?
-  let percent: Double
+  let percent: Double?
 }
 
 private struct RawAmount: Decodable {
