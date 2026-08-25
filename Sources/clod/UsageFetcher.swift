@@ -79,7 +79,8 @@ struct UsageFetcher: Sendable {
       return Credits(used: used.value, limit: limit.value, percent: percent)
     }
 
-    guard let utilization = fiveHour?.utilization ?? credits?.percent else {
+    guard let utilization = fiveHour?.utilization ?? credits?.percent ?? sevenDay?.utilization
+    else {
       throw FetchError.badResponse(String(decoding: data, as: UTF8.self))
     }
 
